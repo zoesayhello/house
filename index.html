@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>家用品庫存管理系統</title>
+    <title>家用品庫存管理系統 (日式簡約版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -197,6 +197,18 @@
                 }));
             };
 
+            const handleDownload = () => {
+                const content = formatUtils.generateTxt(items, history);
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = formatUtils.getTimestampFilename();
+                a.click();
+                URL.revokeObjectURL(url);
+                notify("已下載備份檔案");
+            };
+
             const filteredItems = items.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
             return (
@@ -209,16 +221,7 @@
                             <h1 className="serif-title text-xl tracking-[0.3em] text-[#5D544B] font-bold">庫存管理</h1>
                             <div className="flex gap-2">
                                 <button onClick={() => fileInputRef.current.click()} className="p-2 text-[#A69F98] hover:text-[#5D544B] transition-colors"><Icon name="upload" size={18} /></button>
-                                <button onClick={() => {
-                                    const content = formatUtils.generateTxt(items, history);
-                                    const blob = new Blob([content], { type: 'text/plain' });
-                                    const url = URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = formatUtils.getTimestampFilename();
-                                    a.click();
-                                    notify("已下載備份檔案");
-                                }} className="p-2 text-[#A69F98] hover:text-[#5D544B] transition-colors"><Icon name="download" size={18} /></button>
+                                <button onClick={handleDownload} className="p-2 text-[#A69F98] hover:text-[#5D544B] transition-colors"><Icon name="download" size={18} /></button>
                                 <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => {
                                     const file = e.target.files[0];
                                     if (!file) return;
